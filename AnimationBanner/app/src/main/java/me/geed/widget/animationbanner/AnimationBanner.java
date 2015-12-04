@@ -1,6 +1,7 @@
 package me.geed.widget.animationbanner;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -25,8 +26,6 @@ import java.util.List;
  * <p/>
  * Created by Andy on 2015/11/30.
  * Author Email:yourswee@gmail.com
- * <p/>
- * 由于动画部分使用了ViewPropertyAnimator,因此需要API level 12，可以对动画部分的写法做些修改，使其支持API level 11
  */
 public class AnimationBanner extends FrameLayout {
     /**
@@ -98,6 +97,11 @@ public class AnimationBanner extends FrameLayout {
      * 是否自动循环播放，默认false
      */
     private boolean isAutoSwitch = false;
+
+    /**
+     * 自动播放动画器
+     */
+    private ObjectAnimator autoAnimator;
 
     /**
      * 用于Touch监听的初始坐标
@@ -425,19 +429,22 @@ public class AnimationBanner extends FrameLayout {
 
     /**
      * 左滑动画，左滑之后，将滑到左边看不到的广告位移动到右边末尾
-     * Calls requires API level 12
+     * Calls requires API level 11
      *
      * @param v
      */
     private void doLeftAnimation(final View v, final int index) {
-        v.animate().x(v.getX() - v.getWidth()).setDuration(mDuration).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+        ObjectAnimator leftAnimator = ObjectAnimator.ofFloat(v, "x", v.getX(), v.getX() - v.getWidth());
+        leftAnimator.setDuration(mDuration);
+        leftAnimator.setInterpolator(new LinearInterpolator());
+        leftAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animator) {
-                isAnimationing = true;
+            public void onAnimationCancel(Animator animation) {
+
             }
 
             @Override
-            public void onAnimationEnd(Animator animator) {
+            public void onAnimationEnd(Animator animation) {
                 isAnimationing = false;
                 if (index == bannerNum - 1) {
                     /**
@@ -460,15 +467,16 @@ public class AnimationBanner extends FrameLayout {
             }
 
             @Override
-            public void onAnimationCancel(Animator animator) {
+            public void onAnimationRepeat(Animator animation) {
 
             }
 
             @Override
-            public void onAnimationRepeat(Animator animator) {
-
+            public void onAnimationStart(Animator animation) {
+                isAnimationing = true;
             }
         });
+        leftAnimator.start();
     }
 
     /**
@@ -502,17 +510,20 @@ public class AnimationBanner extends FrameLayout {
 
     /**
      * 右滑动画
-     * Calls requires API level 12
+     * Calls requires API level 11
      */
     private void doRightAnimation(final View v, final int index) {
-        v.animate().x(v.getX() + v.getWidth()).setDuration(mDuration).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+        ObjectAnimator rightAnimator = ObjectAnimator.ofFloat(v, "x", v.getX(), v.getX() + v.getWidth());
+        rightAnimator.setDuration(mDuration);
+        rightAnimator.setInterpolator(new LinearInterpolator());
+        rightAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animator) {
-                isAnimationing = true;
+            public void onAnimationCancel(Animator animation) {
+
             }
 
             @Override
-            public void onAnimationEnd(Animator animator) {
+            public void onAnimationEnd(Animator animation) {
                 isAnimationing = false;
                 if (index == bannerNum - 1) {
                     /**
@@ -528,15 +539,16 @@ public class AnimationBanner extends FrameLayout {
             }
 
             @Override
-            public void onAnimationCancel(Animator animator) {
+            public void onAnimationRepeat(Animator animation) {
 
             }
 
             @Override
-            public void onAnimationRepeat(Animator animator) {
-
+            public void onAnimationStart(Animator animation) {
+                isAnimationing = true;
             }
         });
+        rightAnimator.start();
     }
 
     /**
@@ -552,20 +564,32 @@ public class AnimationBanner extends FrameLayout {
     }
 
     /**
+     * 取消自动播放动画，需要在界面退出或跳转其他界面时取消自动播放的动画以防内存泄露
+     */
+    public void stopAutoPlay() {
+        if (autoAnimator != null) {
+            autoAnimator.cancel();
+        }
+    }
+
+    /**
      * 自动播放循环动画
-     * Calls requires API level 12
+     * Calls requires API level 11
      *
      * @param v
      */
     public void doAutoAnimation(final View v) {
-        v.animate().x(v.getX() - v.getWidth()).setDuration(mDuration * 3).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+        autoAnimator = ObjectAnimator.ofFloat(v, "x", v.getX(), v.getX() - v.getWidth());
+        autoAnimator.setDuration(mDuration * 3);
+        autoAnimator.setInterpolator(new LinearInterpolator());
+        autoAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animator) {
+            public void onAnimationCancel(Animator animation) {
 
             }
 
             @Override
-            public void onAnimationEnd(Animator animator) {
+            public void onAnimationEnd(Animator animation) {
                 if (v.getX() < 0) {
                     v.setX((bannerNum - 1) * v.getWidth());
                 }
@@ -574,15 +598,16 @@ public class AnimationBanner extends FrameLayout {
             }
 
             @Override
-            public void onAnimationCancel(Animator animator) {
+            public void onAnimationRepeat(Animator animation) {
 
             }
 
             @Override
-            public void onAnimationRepeat(Animator animator) {
+            public void onAnimationStart(Animator animation) {
 
             }
         });
+        autoAnimator.start();
     }
 
     /**
