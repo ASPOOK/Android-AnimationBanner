@@ -1,5 +1,6 @@
 package me.geed.animationbanner;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -80,6 +81,21 @@ public class ExampleActivity extends AppCompatActivity {
          * Indicator默认位置为右下方
          */
         //mBanner.setIndicatorPosition(AnimationBanner.IndicatorPosition.CENTER_BOTTOM);
+
+        /**
+         * 设置Indicator小圆点半径
+         */
+        //mBanner.setIndicatorRaidus(20);
+
+        /**
+         * 设置Indicator小圆点处于当前位置时的颜色
+         */
+        //mBanner.setSelectedColor(Color.RED);
+
+        /**
+         * 设置Indicator小圆点非当前位置时的颜色
+         */
+        //mBanner.setUnSelectedColor(Color.BLUE);
 
         /**
          * 动画持续时间默认为500毫秒

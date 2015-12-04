@@ -22,10 +22,10 @@ import java.util.List;
 
 /**
  * AnimationBanner
- *
+ * <p/>
  * Created by Andy on 2015/11/30.
  * Author Email:yourswee@gmail.com
- *
+ * <p/>
  * 由于动画部分使用了ViewPropertyAnimator,因此需要API level 12，可以对动画部分的写法做些修改，使其支持API level 11
  */
 public class AnimationBanner extends FrameLayout {
@@ -68,6 +68,21 @@ public class AnimationBanner extends FrameLayout {
      * Indicator小圆点指示器位置，默认在右下方
      */
     private int mIndicatorPosition = IndicatorPosition.RIGHT_BOTTOM;
+
+    /**
+     * 指示器小圆点半径，默认为10
+     */
+    private int mRadius = 10;
+
+    /**
+     * 小圆点处于当前位置时的颜色
+     */
+    private int mSelectedColor = Color.WHITE;
+
+    /**
+     * 小圆点非当前位置时的颜色
+     */
+    private int mUnSelectedColor = Color.GRAY;
 
     /**
      * 是否只有一张广告横幅
@@ -221,7 +236,8 @@ public class AnimationBanner extends FrameLayout {
     }
 
     /**
-     * 动态生成Indicator小圆点指示器，当Banner条幅数量为1时，不显示Indicator
+     * 动态生成Indicator小圆点指示器，当Banner条幅数量为1时，不显示Indicator<br>
+     * 还可扩展，如在小圆点前面添加文本描述、添加透明背景等，可自由实现
      *
      * @return
      */
@@ -254,11 +270,11 @@ public class AnimationBanner extends FrameLayout {
         for (int i = 0; i < bannerNum; i++) {
             PointIndicator indicator;
             if (i == 0) {
-                indicator = new PointIndicator(mContext, 10, Color.WHITE);
-                indicator.setLayoutParams(new LinearLayout.LayoutParams(30, 20));
+                indicator = new PointIndicator(mContext, mRadius, mSelectedColor);
+                indicator.setLayoutParams(new LinearLayout.LayoutParams(mRadius * 3, mRadius * 2));
             } else {
-                indicator = new PointIndicator(mContext, 10, Color.GRAY);
-                indicator.setLayoutParams(new LinearLayout.LayoutParams(30, 20));
+                indicator = new PointIndicator(mContext, mRadius, mUnSelectedColor);
+                indicator.setLayoutParams(new LinearLayout.LayoutParams(mRadius * 3, mRadius * 2));
             }
             mIndicatorContainer.addView(indicator);
             mIndicators.add(indicator);
@@ -294,6 +310,33 @@ public class AnimationBanner extends FrameLayout {
      */
     public void setIndicatorPosition(int position) {
         mIndicatorPosition = position;
+    }
+
+    /**
+     * 设置指示器小圆点的半径
+     *
+     * @param radius
+     */
+    public void setIndicatorRaidus(int radius) {
+        mRadius = radius;
+    }
+
+    /**
+     * 设置小圆点处于当前位置的颜色
+     *
+     * @param selectedColor
+     */
+    public void setSelectedColor(int selectedColor) {
+        mSelectedColor = selectedColor;
+    }
+
+    /**
+     * 设置小圆点非当前位置的颜色
+     *
+     * @param unSelectedColor
+     */
+    public void setUnSelectedColor(int unSelectedColor) {
+        mUnSelectedColor = unSelectedColor;
     }
 
     /**
@@ -598,11 +641,11 @@ public class AnimationBanner extends FrameLayout {
          */
         public void changeStatus(boolean isCurrent) {
             if (isCurrent) {
-                mColor = Color.WHITE;
+                mColor = mSelectedColor;
                 initPaint();
                 invalidate();
             } else {
-                mColor = Color.GRAY;
+                mColor = mUnSelectedColor;
                 initPaint();
                 invalidate();
             }
